@@ -42,12 +42,7 @@ class RTCProcessor:
     prefix attention, and adaptive chunk processing.
     """
 
-    def __init__(self, rtc_config: RTCConfig, *, trained_mode_supported: bool = False):
-        if rtc_config.enabled and rtc_config.mode == "trained" and not trained_mode_supported:
-            raise ValueError(
-                "RTC mode='trained' requires a PI05-compatible checkpoint trained with "
-                "rtc_training_max_delay > 0."
-            )
+    def __init__(self, rtc_config: RTCConfig):
         self.rtc_config = rtc_config
 
         self.tracker = None

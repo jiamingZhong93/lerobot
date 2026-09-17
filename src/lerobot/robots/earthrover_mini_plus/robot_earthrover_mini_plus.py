@@ -23,7 +23,7 @@ import cv2
 import numpy as np
 import requests
 
-from lerobot.lerobot_types import RobotAction, RobotObservation
+from lerobot.types import RobotAction, RobotObservation
 from lerobot.utils.decorators import check_if_already_connected, check_if_not_connected
 from lerobot.utils.errors import DeviceNotConnectedError
 
@@ -84,8 +84,7 @@ class EarthRoverMiniPlus(Robot):
 
     Attributes:
         config: Robot configuration
-        sdk_base_url: Base URL of the Frodobots SDK server, taken from
-            ``config.sdk_url`` (default: http://localhost:8000)
+        sdk_base_url: URL of the Frodobots SDK server (default: http://localhost:8000)
     """
 
     config_class = EarthRoverMiniPlusConfig
@@ -99,7 +98,7 @@ class EarthRoverMiniPlus(Robot):
         """
         super().__init__(config)
         self.config = config
-        self.sdk_base_url = config.sdk_url
+        self.sdk_base_url = "http://localhost:8000"
 
         # Empty cameras dict for compatibility with recording script
         # Cameras are accessed directly via SDK, not through Camera objects

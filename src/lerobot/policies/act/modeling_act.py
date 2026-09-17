@@ -47,8 +47,6 @@ class ACTPolicy(PreTrainedPolicy):
 
     config_class = ACTConfig
     name = "act"
-    # FSDP2 wrap units: one unit per transformer layer of both stacks.
-    _fsdp_wrap_modules = ["ACTEncoderLayer", "ACTDecoderLayer"]
 
     def __init__(
         self,

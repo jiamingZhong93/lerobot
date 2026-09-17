@@ -50,7 +50,6 @@ if TYPE_CHECKING or _datasets_available:
 else:
     LeRobotDataset = None
 
-from lerobot.lerobot_types import EnvTransition, TransitionKey
 from lerobot.processor import (
     AbsoluteActionsProcessorStep,
     AddBatchDimensionProcessorStep,
@@ -67,6 +66,7 @@ from lerobot.processor import (
     transition_to_batch,
     transition_to_policy_action,
 )
+from lerobot.types import EnvTransition, TransitionKey
 from lerobot.utils.constants import (
     ACTION,
     OBS_IMAGE,
@@ -738,9 +738,8 @@ def _compute_horizon_relative_action_stats(
 
 def _iter_action_state_training_samples(dataset: Any):
     ensure_reader = getattr(dataset, "_ensure_reader", None)
-    # Only the default parquet reader exposes hf_dataset; other readers
-    # (e.g. lance) fall through to the generic per-item loop below.
-    if callable(ensure_reader) and hasattr(reader := ensure_reader(), "hf_dataset"):
+    if callable(ensure_reader):
+        reader = ensure_reader()
         if reader.hf_dataset is None:
             reader.load_and_activate()
         delta_indices = getattr(reader, "delta_indices", None)

@@ -18,8 +18,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from lerobot.utils.import_utils import make_device_from_device_class
-
 from .base import BaseStrategy
 from .core import RolloutStrategy
 from .dagger import DAggerStrategy
@@ -34,10 +32,8 @@ if TYPE_CHECKING:
 def create_strategy(config: RolloutStrategyConfig) -> RolloutStrategy:
     """Instantiate the appropriate strategy from a config object.
 
-    Dispatches on ``config.type`` (the name registered via ``draccus.ChoiceRegistry``)
-    for the built-ins, then falls back to the ``<Name>Config`` -> ``<Name>`` naming
-    convention shared with the robot, camera and teleoperator factories, so a
-    third-party strategy needs no edit here.
+    Dispatches on ``config.type`` (the name registered via
+    ``draccus.ChoiceRegistry``).
     """
     if config.type == "base":
         return BaseStrategy(config)
@@ -49,7 +45,6 @@ def create_strategy(config: RolloutStrategyConfig) -> RolloutStrategy:
         return DAggerStrategy(config)
     if config.type == "episodic":
         return EpisodicStrategy(config)
-    try:
-        return make_device_from_device_class(config)
-    except Exception as e:
-        raise ValueError(f"Error creating strategy with config {config}: {e}") from e
+    raise ValueError(
+        f"Unknown strategy type '{config.type}'. Available: base, sentry, highlight, dagger, episodic"
+    )

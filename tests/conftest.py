@@ -35,7 +35,6 @@ _draccus_docstring.get_attribute_docstring = functools.cache(_draccus_docstring.
 # Fixtures that depend on optional packages are only registered when those packages are available,
 # so that tests can be collected and run even with a minimal install.
 pytest_plugins = [
-    "tests.fixtures.cadence",
     "tests.fixtures.optimizers",
 ]
 

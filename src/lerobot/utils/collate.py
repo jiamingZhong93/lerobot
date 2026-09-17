@@ -21,9 +21,8 @@ from typing import Any
 from torch.utils.data._utils.collate import default_collate
 
 from lerobot.datasets.language import LANGUAGE_COLUMNS
-from lerobot.utils.constants import MESSAGES_RENDERED
 
-_PYTHON_LIST_KEYS = {MESSAGES_RENDERED, "message_streams", "target_message_indices", *LANGUAGE_COLUMNS}
+_PYTHON_LIST_KEYS = {"messages", "message_streams", "target_message_indices"}
 
 
 def lerobot_collate_fn(batch: list[dict[str, Any] | None]) -> dict[str, Any] | None:
@@ -38,7 +37,7 @@ def lerobot_collate_fn(batch: list[dict[str, Any] | None]) -> dict[str, Any] | N
         return None
 
     # All-or-nothing per key: a partial-presence batch (e.g. half the samples
-    # carry `messages_rendered` and half don't) is a real bug in the upstream
+    # carry `messages` and half don't) is a real bug in the upstream
     # rendering step — silently filtering would hand downstream consumers a
     # preserved list shorter than the tensor batch. Raise instead so the
     # mismatch surfaces at the boundary.

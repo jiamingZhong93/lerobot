@@ -308,8 +308,7 @@ def test_annotation_metadata_sync_allows_non_streaming_load(
     from lerobot.annotations.steerable_pipeline.executor import Executor
     from lerobot.datasets.feature_utils import get_hf_features_from_features
     from lerobot.datasets.io_utils import load_info, load_nested_dataset
-    from lerobot.datasets.language import language_feature_info
-    from lerobot.utils.constants import LANGUAGE_EVENTS, LANGUAGE_PERSISTENT
+    from lerobot.datasets.language import LANGUAGE_EVENTS, LANGUAGE_PERSISTENT, language_feature_info
 
     info_path = fixture_dataset_root / "meta" / "info.json"
     info = json.loads(info_path.read_text())

@@ -25,8 +25,8 @@ from dataclasses import dataclass, field
 from torch import Tensor
 
 from lerobot.configs import PipelineFeatureType, PolicyFeature
-from lerobot.lerobot_types import EnvTransition, PolicyAction
-from lerobot.utils.constants import MESSAGES_RENDERED, OBS_ENV_STATE, OBS_IMAGE, OBS_IMAGES, OBS_STATE
+from lerobot.types import EnvTransition, PolicyAction
+from lerobot.utils.constants import OBS_ENV_STATE, OBS_IMAGE, OBS_IMAGES, OBS_STATE
 
 from .pipeline import (
     ComplementaryDataProcessorStep,
@@ -175,10 +175,13 @@ class AddBatchDimensionComplementaryDataStep(ComplementaryDataProcessorStep):
             if isinstance(task_index_value, Tensor) and task_index_value.dim() == 0:
                 complementary_data["task_index"] = task_index_value.unsqueeze(0)
 
-        if MESSAGES_RENDERED in complementary_data:
-            messages = complementary_data[MESSAGES_RENDERED]
+        complementary_data.pop("language_persistent", None)
+        complementary_data.pop("language_events", None)
+
+        if "messages" in complementary_data:
+            messages = complementary_data["messages"]
             if isinstance(messages, list) and (not messages or isinstance(messages[0], dict)):
-                complementary_data[MESSAGES_RENDERED] = [messages]
+                complementary_data["messages"] = [messages]
 
         if "message_streams" in complementary_data:
             streams = complementary_data["message_streams"]

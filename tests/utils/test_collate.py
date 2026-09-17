@@ -9,22 +9,22 @@ import torch  # noqa: E402
 from lerobot.utils.collate import lerobot_collate_fn  # noqa: E402
 
 
-def test_lerobot_collate_preserves_messages_and_raw_language():
+def test_lerobot_collate_preserves_messages_and_drops_raw_language():
     batch = [
         {
             "index": torch.tensor(0),
-            "messages_rendered": [{"role": "assistant", "content": "a"}],
+            "messages": [{"role": "assistant", "content": "a"}],
             "message_streams": ["low_level"],
             "target_message_indices": [0],
             "language_persistent": [{"content": "raw"}],
-            "language_events": [{"content": "event a"}],
+            "language_events": [],
         },
         {
             "index": torch.tensor(1),
-            "messages_rendered": [{"role": "assistant", "content": "b"}],
+            "messages": [{"role": "assistant", "content": "b"}],
             "message_streams": ["low_level"],
             "target_message_indices": [0],
-            "language_persistent": [{"content": "raw b"}],
+            "language_persistent": [{"content": "raw"}],
             "language_events": [],
         },
     ]
@@ -32,12 +32,12 @@ def test_lerobot_collate_preserves_messages_and_raw_language():
     out = lerobot_collate_fn(batch)
 
     assert out["index"].tolist() == [0, 1]
-    assert out["messages_rendered"][0][0]["content"] == "a"
-    assert out["messages_rendered"][1][0]["content"] == "b"
+    assert out["messages"][0][0]["content"] == "a"
+    assert out["messages"][1][0]["content"] == "b"
     assert out["message_streams"] == [["low_level"], ["low_level"]]
     assert out["target_message_indices"] == [[0], [0]]
-    assert out["language_persistent"] == [[{"content": "raw"}], [{"content": "raw b"}]]
-    assert out["language_events"] == [[{"content": "event a"}], []]
+    assert "language_persistent" not in out
+    assert "language_events" not in out
 
 
 def test_lerobot_collate_passes_through_standard_batch():

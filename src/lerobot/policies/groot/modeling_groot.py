@@ -68,9 +68,6 @@ class GrootPolicy(PreTrainedPolicy):
     name = "groot"
     config_class = GrootConfig
 
-    def supports_rtc(self) -> bool:
-        return True
-
     def __init__(self, config: GrootConfig, **kwargs):
         """Initialize Groot policy wrapper."""
         require_package("transformers", extra="groot")

@@ -28,7 +28,7 @@ from dataclasses import asdict, dataclass, field
 from fractions import Fraction
 from pathlib import Path
 from threading import Lock
-from typing import Any, BinaryIO, ClassVar
+from typing import Any, ClassVar
 
 import av
 import fsspec
@@ -105,7 +105,7 @@ def decode_video_frames(
 
 
 def decode_video_frames_pyav(
-    video_path: Path | str | BinaryIO,
+    video_path: Path | str,
     timestamps: list[float],
     tolerance_s: float,
     log_loaded_timestamps: bool = False,
@@ -124,8 +124,7 @@ def decode_video_frames_pyav(
     video can be adjusted at encoding time to trade off decoding speed against file size.
 
     Args:
-        video_path: Path to the video file, or a seekable binary file-like object
-            (supporting ``read``/``seek``) — e.g. a buffered remote source.
+        video_path: Path to the video file.
         timestamps: List of timestamps (in seconds) to extract frames for.
         tolerance_s: Allowed deviation in seconds between a queried timestamp and the closest
             decoded frame.
@@ -138,9 +137,7 @@ def decode_video_frames_pyav(
         torch.Tensor of shape (len(timestamps), C, H, W).
     """
     # TODO(rcadene): also load audio stream at the same time
-    if isinstance(video_path, (str, Path)):
-        video_path = str(video_path)
-    # else: a file-like object (e.g. a buffered remote source) passes to av.open as-is.
+    video_path = str(video_path)
 
     # set the first and last requested timestamps
     # Note: previous timestamps are usually loaded, since we need to access the previous key frame
@@ -186,18 +183,17 @@ def decode_video_frames_pyav(
             f"No frames could be decoded from {video_path} in the timestamp range [{first_ts}, {last_ts}]."
         )
 
-    # float64: hour-scale timestamps quantize past tolerance_s in float32.
-    query_ts = torch.tensor(timestamps, dtype=torch.float64)
-    loaded_ts_t = torch.tensor(loaded_ts, dtype=torch.float64)
+    query_ts = torch.tensor(timestamps)
+    loaded_ts_t = torch.tensor(loaded_ts)
 
     # compute distances between each query timestamp and timestamps of all loaded frames
     dist = torch.cdist(query_ts[:, None], loaded_ts_t[:, None], p=1)
     min_, argmin_ = dist.min(1)
 
-    is_within_tol = min_ <= tolerance_s
+    is_within_tol = min_ < tolerance_s
     if not is_within_tol.all():
         raise FrameTimestampError(
-            f"One or several query timestamps unexpectedly violate the tolerance ({min_[~is_within_tol]} >= {tolerance_s=})."
+            f"One or several query timestamps unexpectedly violate the tolerance ({min_[~is_within_tol]} > {tolerance_s=})."
             " It means that the closest frame that can be loaded from the video is too far away in time."
             " This might be due to synchronization issues with timestamps during data collection."
             " To be safe, we advise to ignore this item during training."
@@ -398,18 +394,17 @@ def decode_video_frames_torchcodec(
         if log_loaded_timestamps:
             logger.info(f"Frame loaded at timestamp={pts:.4f}")
 
-    # float64: hour-scale timestamps quantize past tolerance_s in float32.
-    query_ts = torch.tensor(timestamps, dtype=torch.float64)
-    loaded_ts = torch.tensor(loaded_ts, dtype=torch.float64)
+    query_ts = torch.tensor(timestamps)
+    loaded_ts = torch.tensor(loaded_ts)
 
     # compute distances between each query timestamp and loaded timestamps
     dist = torch.cdist(query_ts[:, None], loaded_ts[:, None], p=1)
     min_, argmin_ = dist.min(1)
 
-    is_within_tol = min_ <= tolerance_s
+    is_within_tol = min_ < tolerance_s
     if not is_within_tol.all():
         raise FrameTimestampError(
-            f"One or several query timestamps unexpectedly violate the tolerance ({min_[~is_within_tol]} >= {tolerance_s=})."
+            f"One or several query timestamps unexpectedly violate the tolerance ({min_[~is_within_tol]} > {tolerance_s=})."
             " It means that the closest frame that can be loaded from the video is too far away in time."
             " This might be due to synchronization issues with timestamps during data collection."
             " To be safe, we advise to ignore this item during training."

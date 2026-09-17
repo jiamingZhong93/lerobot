@@ -44,7 +44,6 @@ from typing import Protocol
 
 import numpy as np
 
-from lerobot.lerobot_types import RobotAction, RobotObservation
 from lerobot.model.kinematics import RobotKinematics
 from lerobot.processor import (
     RobotProcessorPipeline,
@@ -57,6 +56,7 @@ from lerobot.robots.so_follower.robot_kinematic_processor import (
     EEBoundsAndSafety,
     InverseKinematicsEEToJoints,
 )
+from lerobot.types import RobotAction, RobotObservation
 from lerobot.utils.constants import HF_LEROBOT_CALIBRATION, HF_LEROBOT_HOME, TELEOPERATORS
 from lerobot.utils.robot_utils import precise_sleep
 

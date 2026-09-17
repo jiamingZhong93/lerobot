@@ -23,7 +23,6 @@ import torch
 from torch import Tensor
 
 from lerobot.configs import PipelineFeatureType, PolicyFeature
-from lerobot.lerobot_types import EnvTransition, TransitionKey
 from lerobot.processor import (
     AddBatchDimensionProcessorStep,
     DeviceProcessorStep,
@@ -38,6 +37,7 @@ from lerobot.rewards.topreward.configuration_topreward import (
     DEFAULT_PROMPT_SUFFIX_TEMPLATE,
     TOPRewardConfig,
 )
+from lerobot.types import EnvTransition, TransitionKey
 from lerobot.utils.constants import (
     OBS_IMAGES,
     OBS_PREFIX,

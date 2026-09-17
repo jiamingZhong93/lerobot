@@ -23,18 +23,8 @@ from typing import Any
 import numpy as np
 import torch
 
-from lerobot.lerobot_types import EnvTransition, PolicyAction, RobotAction, RobotObservation, TransitionKey
-from lerobot.utils.constants import (
-    ACTION,
-    DONE,
-    INFO,
-    MESSAGES_RENDERED,
-    OBS_PREFIX,
-    QUERY_KIND,
-    QUERY_TEXT,
-    REWARD,
-    TRUNCATED,
-)
+from lerobot.types import EnvTransition, PolicyAction, RobotAction, RobotObservation, TransitionKey
+from lerobot.utils.constants import ACTION, DONE, INFO, OBS_PREFIX, REWARD, TRUNCATED
 
 
 @singledispatch
@@ -168,17 +158,12 @@ _COMPLEMENTARY_KEYS = (
     "index",
     "task_index",
     "episode_index",
-    "frame_index",
     "timestamp",
     "language_persistent",
     "language_events",
-    MESSAGES_RENDERED,
+    "messages",
     "message_streams",
     "target_message_indices",
-    # Text-generation request keys: carried into complementary_data so a prompt-formatting
-    # processor step can read the kind and rewrite QUERY_TEXT.
-    QUERY_KIND,
-    QUERY_TEXT,
 )
 
 

@@ -145,9 +145,6 @@ class SmolVLAPolicy(PreTrainedPolicy):
     config_class = SmolVLAConfig
     name = "smolvla"
 
-    def supports_rtc(self) -> bool:
-        return True
-
     def __init__(
         self,
         config: SmolVLAConfig,
